@@ -36,6 +36,7 @@ class CreateHaircutService {
         user_id: user_id,
         name: name,
         price: price,
+        status: true,
       },
     });
 
