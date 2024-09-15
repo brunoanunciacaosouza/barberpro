@@ -1,0 +1,16 @@
+import { Request, Response } from "express";
+import { UserDetailService } from "../../services/user/DetailUserService";
+
+class UserDetailController {
+  async handle(req: Request, res: Response) {
+    const user_id = req.user_id;
+
+    const userDetailService = new UserDetailService();
+
+    const detailUser = await userDetailService.execute();
+
+    return res.json(detailUser);
+  }
+}
+
+export { UserDetailController };
