@@ -6,6 +6,7 @@ import logoImg from "../../../public/images/logo.svg";
 import Link from "next/link";
 import { useContext, useState } from "react";
 import { AuthContext } from "@/context/AuthContext";
+import { canSRRGuest } from "@/utils/canSSRGuest";
 
 export default function Register() {
   const { signUp } = useContext(AuthContext);
@@ -102,3 +103,9 @@ export default function Register() {
     </>
   );
 }
+
+export const getServerSideProps = canSRRGuest(async (context) => {
+  return {
+    props: {},
+  };
+});

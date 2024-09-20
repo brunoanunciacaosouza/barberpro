@@ -1,3 +1,4 @@
+import { canSRRAuth } from "@/utils/canSSRAuth";
 import { Flex, Text } from "@chakra-ui/react";
 import Head from "next/head";
 
@@ -13,3 +14,9 @@ export default function Dashboard() {
     </>
   );
 }
+
+export const getServerSideProps = canSRRAuth(async (context) => {
+  return {
+    props: {},
+  };
+});
