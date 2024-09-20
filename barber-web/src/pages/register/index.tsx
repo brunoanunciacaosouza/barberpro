@@ -6,18 +6,17 @@ import logoImg from "../../../public/images/logo.svg";
 import Link from "next/link";
 import { useState } from "react";
 
-export default function Login() {
+export default function Register() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  async function handleLogin(){
-
-  }
+  async function handleRegister() {}
 
   return (
     <>
       <Head>
-        <title>BarberPro - Faça login para acessar</title>
+        <title>Crie a sua conta no barberPro</title>
       </Head>
       <Flex
         background="barber.900"
@@ -35,6 +34,17 @@ export default function Login() {
               objectFit="fill"
             />
           </Center>
+
+          <Input
+            placeholder="Nome da barbearia"
+            type="text"
+            background="barber.400"
+            variant="filled"
+            size="lg"
+            mb={3}
+            value={name}
+            onChange={({ target }) => setName(target.value)}
+          />
 
           <Input
             placeholder="email@email.com"
@@ -64,15 +74,15 @@ export default function Login() {
             color="grey.900"
             size="lg"
             _hover={{ bg: "#ffb13e" }}
-            onClick={handleLogin}
+            onClick={handleRegister}
           >
-            Acessar
+            Cadastrar
           </Button>
 
           <Center mt={1} color="gray">
-            <Link href="/register">
+            <Link href="/login">
               <Text cursor="pointer" fontSize={14}>
-                Ainda não possui conta? <strong>Cadastre-se</strong>
+                Já possui conta? <strong>Faça o login</strong>
               </Text>
             </Link>
           </Center>
