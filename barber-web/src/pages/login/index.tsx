@@ -38,6 +38,7 @@ export default function Login() {
               width={240}
               quality={100}
               objectFit="fill"
+              priority={true}
             />
           </Center>
 
