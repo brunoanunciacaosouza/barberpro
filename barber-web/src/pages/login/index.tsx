@@ -13,7 +13,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
 
   async function handleLogin() {
-    const response = await signIn({
+    await signIn({
       email,
       password,
     });
