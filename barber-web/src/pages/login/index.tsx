@@ -4,14 +4,19 @@ import Image from "next/image";
 
 import logoImg from "../../../public/images/logo.svg";
 import Link from "next/link";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { AuthContext } from "@/context/AuthContext";
 
 export default function Login() {
+  const { signIn } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  async function handleLogin(){
-
+  async function handleLogin() {
+    const response = await signIn({
+      email,
+      password,
+    });
   }
 
   return (
@@ -39,6 +44,7 @@ export default function Login() {
           <Input
             placeholder="email@email.com"
             type="email"
+            color="barber.100"
             background="barber.400"
             variant="filled"
             size="lg"
@@ -50,6 +56,7 @@ export default function Login() {
           <Input
             placeholder="********"
             type="password"
+            color="barber.100"
             background="barber.400"
             variant="filled"
             size="lg"

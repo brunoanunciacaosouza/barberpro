@@ -38,6 +38,7 @@ export default function Register() {
           <Input
             placeholder="Nome da barbearia"
             type="text"
+            color="barber.100"
             background="barber.400"
             variant="filled"
             size="lg"
@@ -49,6 +50,7 @@ export default function Register() {
           <Input
             placeholder="email@email.com"
             type="email"
+            color="barber.100"
             background="barber.400"
             variant="filled"
             size="lg"
@@ -60,6 +62,7 @@ export default function Register() {
           <Input
             placeholder="********"
             type="password"
+            color="barber.100"
             background="barber.400"
             variant="filled"
             size="lg"
