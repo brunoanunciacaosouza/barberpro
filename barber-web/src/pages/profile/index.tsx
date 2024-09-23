@@ -1,9 +1,34 @@
 import { Sidebar } from "@/components/sidebar";
+import { AuthContext } from "@/context/AuthContext";
+import { setupApiClient } from "@/services/api";
+import { canSRRAuth } from "@/utils/canSSRAuth";
 import { Flex, Heading, Text, Input, Box, Button } from "@chakra-ui/react";
 import Head from "next/head";
 import Link from "next/link";
+import { useContext, useState } from "react";
 
-export default function Profile() {
+interface UserProps {
+  id: string;
+  name: string;
+  email: string;
+  endereco: string | null;
+}
+
+interface ProfileProps {
+  user: UserProps;
+  premium: boolean;
+}
+
+export default function Profile({ user, premium }: ProfileProps) {
+  const { logoutUser } = useContext(AuthContext);
+
+  const [name, setName] = useState(user && user?.name);
+  const [endereco, setEndereco] = useState(user && user?.endereco);
+
+  async function handleLogout() {
+    logoutUser();
+  }
+
   return (
     <>
       <Head>
@@ -49,6 +74,8 @@ export default function Profile() {
                 borderColor="barber.100"
                 size="lg"
                 mb={3}
+                value={name}
+                onChange={(event) => setName(event.target.value)}
               />
 
               <Text mb={2} fontSize="xl" fontWeight="bold" color="white">
@@ -64,6 +91,8 @@ export default function Profile() {
                 borderColor="barber.100"
                 size="lg"
                 mb={3}
+                value={endereco}
+                onChange={(event) => setEndereco(event.target.value)}
               />
 
               <Text mb={2} fontSize="xl" fontWeight="bold" color="white">
@@ -81,8 +110,12 @@ export default function Profile() {
                 rounded={6}
                 background="barber.900"
               >
-                <Text p={2} fontSize="lg" color="#4dffb4">
-                  Plano Grátis
+                <Text
+                  p={2}
+                  fontSize="lg"
+                  color={premium ? "#ffb13e" : "#4dffb4"}
+                >
+                  Plano {premium ? "Premium" : "Grátis"}
                 </Text>
 
                 <Link href="/planos">
@@ -112,15 +145,17 @@ export default function Profile() {
               </Button>
 
               <Button
-               background="transparent"
-               mb={6}
-               color="red.500"
-               borderWidth={2}
-               borderColor="red.500"
-               size="lg"
-               _hover={{ bg: "transparent" }}
-               onClick={() => {}}
-              >Sair da conta</Button>
+                background="transparent"
+                mb={6}
+                color="red.500"
+                borderWidth={2}
+                borderColor="red.500"
+                size="lg"
+                _hover={{ bg: "transparent" }}
+                onClick={handleLogout}
+              >
+                Sair da conta
+              </Button>
             </Flex>
           </Flex>
         </Flex>
@@ -128,3 +163,34 @@ export default function Profile() {
     </>
   );
 }
+
+export const getServerSideProps = canSRRAuth(async (context) => {
+  try {
+    const apiClient = setupApiClient(context);
+    const response = await apiClient.get("/me");
+
+    const user = {
+      id: response.data.id,
+      name: response.data.name,
+      email: response.data.email,
+      endereco: response.data?.endereco,
+    };
+
+    return {
+      props: {
+        user: user,
+        premium:
+          response.data?.subscriptions?.status === "active" ? true : false,
+      },
+    };
+  } catch (error) {
+    console.log(error);
+
+    return {
+      redirect: {
+        destination: "/dashboard",
+        permanent: false,
+      },
+    };
+  }
+});
