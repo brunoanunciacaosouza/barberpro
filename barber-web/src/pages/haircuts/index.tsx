@@ -27,6 +27,7 @@ export default function Haircuts() {
           direction="column"
           alignItems="flex-start"
           justifyContent="flex-start"
+          
         >
           <Flex
             direction={isMobile ? "column" : "row"}
@@ -45,7 +46,7 @@ export default function Haircuts() {
               Modelos de corte
             </Heading>
 
-            <Flex width="60%" alignItems="center" justifyContent="flex-end" gap={10} >
+            <Flex width="60%" alignItems="center" justifyContent={isMobile ? "center" : "flex-start"} gap={10} >
               <Link href="/haircuts/new">
                 <Button>Cadastrar novo</Button>
               </Link>
