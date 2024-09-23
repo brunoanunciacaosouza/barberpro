@@ -11,6 +11,8 @@ import {
 } from "@chakra-ui/react";
 import Head from "next/head";
 import Link from "next/link";
+import Router from "next/router";
+import { useState } from "react";
 import { FiChevronLeft } from "react-icons/fi";
 
 interface NewHaircutProps {
@@ -20,6 +22,28 @@ interface NewHaircutProps {
 
 export default function New({ subscription, count }: NewHaircutProps) {
   const [isMobile] = useMediaQuery("(max-width: 500px)");
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+
+  async function handleRegister() {
+    if (name === "" || price === "") {
+      return;
+    }
+
+    try {
+      const apiCliente = setupApiClient();
+
+      await apiCliente.post("/haircut", {
+        name: name,
+        price: Number(price),
+      });
+
+      Router.push("/haircuts");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <>
       <Head>
@@ -84,6 +108,8 @@ export default function New({ subscription, count }: NewHaircutProps) {
               borderColor="barber.100"
               size="lg"
               mb={3}
+              value={name}
+              onChange={(event) => setName(event.target.value)}
             />
 
             <Input
@@ -95,6 +121,8 @@ export default function New({ subscription, count }: NewHaircutProps) {
               borderColor="barber.100"
               size="lg"
               mb={3}
+              value={price}
+              onChange={(event) => setPrice(event.target.value)}
             />
 
             <Button
@@ -105,6 +133,7 @@ export default function New({ subscription, count }: NewHaircutProps) {
               size="lg"
               cursor={!subscription && count >= 3 ? "not-allowed" : "pointer"}
               _hover={{ bg: "#ffb13e" }}
+              onClick={handleRegister}
             >
               Cadastrar
             </Button>
