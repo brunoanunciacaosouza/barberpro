@@ -1,17 +1,24 @@
 import { Sidebar } from "@/components/sidebar";
+import { setupApiClient } from "@/services/api";
+import { canSRRAuth } from "@/utils/canSSRAuth";
 import {
   Button,
   Flex,
   Heading,
   Input,
-  Text,
   useMediaQuery,
+  Text,
 } from "@chakra-ui/react";
 import Head from "next/head";
 import Link from "next/link";
 import { FiChevronLeft } from "react-icons/fi";
 
-export default function New() {
+interface NewHaircutProps {
+  subscription: boolean;
+  count: number;
+}
+
+export default function New({ subscription, count }: NewHaircutProps) {
   const [isMobile] = useMediaQuery("(max-width: 500px)");
   return (
     <>
@@ -96,13 +103,55 @@ export default function New() {
               mb={6}
               color="grey.900"
               size="lg"
+              cursor={!subscription && count >= 3 ? "not-allowed" : "pointer"}
               _hover={{ bg: "#ffb13e" }}
             >
               Cadastrar
             </Button>
+
+            {!subscription && count >= 3 && (
+              <Flex
+                flexDirection="row"
+                justifyContent="center"
+                alignItems="center"
+                gap={1}
+              >
+                <Text color="barber.100">
+                  Você atingiu seu limite de cortes!
+                </Text>
+                <Link href="/planos" style={{ color: "#4dffb4" }}>
+                  Seja premium
+                </Link>
+              </Flex>
+            )}
           </Flex>
         </Flex>
       </Sidebar>
     </>
   );
 }
+
+export const getServerSideProps = canSRRAuth(async (context) => {
+  try {
+    const apiClient = setupApiClient(context);
+    const response = await apiClient.get("/haircut/check");
+    const count = await apiClient.get("/haircut/count");
+
+    return {
+      props: {
+        subscription:
+          response.data?.subscriptions?.status === "active" ? true : false,
+        count: count.data,
+      },
+    };
+  } catch (error) {
+    console.log(error);
+
+    return {
+      redirect: {
+        destination: "/dashboard",
+        permanent: false,
+      },
+    };
+  }
+});
