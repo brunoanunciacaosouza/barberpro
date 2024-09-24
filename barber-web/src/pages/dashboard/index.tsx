@@ -43,7 +43,7 @@ export default function Dashboard() {
               Agenda - Próximos clientes
             </Heading>
 
-            <Link href="/haircuts/new">
+            <Link href="/new">
               <Button>Registrar</Button>
             </Link>
           </Flex>
@@ -77,9 +77,13 @@ export default function Dashboard() {
                 </Text>
               </Flex>
 
-              <Text fontWeight="bold" mb={isMobile ? 2 : 0} color="#f1f1f1">Corte completo</Text>
+              <Text fontWeight="bold" mb={isMobile ? 2 : 0} color="#f1f1f1">
+                Corte completo
+              </Text>
 
-              <Text fontWeight="bold" mb={isMobile ? 2 : 0} color="#f1f1f1">R$: 59.90</Text>
+              <Text fontWeight="bold" mb={isMobile ? 2 : 0} color="#f1f1f1">
+                R$: 59.90
+              </Text>
             </Flex>
           </ChakraLink>
         </Flex>
