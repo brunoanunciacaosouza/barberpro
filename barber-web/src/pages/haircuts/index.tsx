@@ -15,7 +15,7 @@ import Link from "next/link";
 import { IoMdPricetag } from "react-icons/io";
 import { setupApiClient } from "@/services/api";
 import { canSRRAuth } from "@/utils/canSSRAuth";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 
 interface HaircutsItem {
   id: string;
@@ -35,6 +35,33 @@ export default function Haircuts({ haircuts }: HaircutsProps) {
   const [haircutList, setHaircutList] = useState<HaircutsItem[]>(
     haircuts || []
   );
+  const [disableHaircut, setDisableHaircut] = useState("enabled");
+
+  async function handleDisabled(event: ChangeEvent<HTMLInputElement>) {
+    const apiClient = setupApiClient();
+
+    const response = await apiClient.get(`/haircuts`, {
+      params: {
+        status: true,
+      },
+    });
+
+    setHaircutList(response.data);
+
+    if (event.target.value === "disabled") {
+      setDisableHaircut("enabled");
+    } else {
+      setDisableHaircut("disabled");
+
+      const response = await apiClient.get(`/haircuts`, {
+        params: {
+          status: false,
+        },
+      });
+
+      setHaircutList(response.data);
+    }
+  }
 
   return (
     <>
@@ -82,7 +109,13 @@ export default function Haircuts({ haircuts }: HaircutsProps) {
                 <Text fontWeight="bold" color="barber.100">
                   ATIVOS
                 </Text>
-                <Switch colorScheme="green" size="lg" />
+                <Switch
+                  colorScheme="green"
+                  size="lg"
+                  value={disableHaircut}
+                  onChange={(event) => handleDisabled(event)}
+                  isChecked={disableHaircut === "disabled" ? false : true}
+                />
               </Stack>
             </Flex>
           </Flex>
