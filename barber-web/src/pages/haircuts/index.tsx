@@ -122,7 +122,7 @@ export default function Haircuts({ haircuts }: HaircutsProps) {
 
           {haircutList.map((haircut) => (
             <Link
-              href="/haircuts/123"
+              href={`haircuts/${haircut.id}`}
               style={{ width: "100%" }}
               key={haircut.id}
             >
