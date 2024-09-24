@@ -17,7 +17,7 @@ import { setupApiClient } from "@/services/api";
 import { canSRRAuth } from "@/utils/canSSRAuth";
 import { ChangeEvent, useState } from "react";
 
-interface HaircutsItem {
+export interface HaircutsItem {
   id: string;
   name: string;
   price: number | string;

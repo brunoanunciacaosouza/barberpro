@@ -1,4 +1,6 @@
 import { Sidebar } from "@/components/sidebar";
+import { setupApiClient } from "@/services/api";
+import { canSRRAuth } from "@/utils/canSSRAuth";
 import {
   Button,
   Flex,
@@ -12,9 +14,25 @@ import {
 } from "@chakra-ui/react";
 import Head from "next/head";
 import { FiChevronLeft } from "react-icons/fi";
+import { HaircutsItem } from ".";
 
-export default function EditHaircut() {
+interface SubscriptionProps {
+  id: string;
+  status: string;
+}
+
+interface EditHaircutProps {
+  haircut: HaircutsItem;
+  subscription: SubscriptionProps | null;
+}
+
+export default function EditHaircut({
+  subscription,
+  haircut,
+}: EditHaircutProps) {
   const [isMobile] = useMediaQuery("(max-width: 500px)");
+
+  console.log(subscription);
   return (
     <>
       <Head>
@@ -112,12 +130,71 @@ export default function EditHaircut() {
               color="grey.900"
               size="lg"
               _hover={{ bg: "#ffb13e" }}
+              cursor={
+                subscription?.status === "active" ? "pointer" : "not-allowed"
+              }
             >
               Salvar
             </Button>
+
+            {subscription?.status !== "active" && (
+              <Flex
+                flexDirection="row"
+                justifyContent="center"
+                alignItems="center"
+                gap={1}
+              >
+                <Text color="barber.100">
+                  Seja premium e tenha todos os acessos liberados!
+                </Text>
+                <Link href="/planos" style={{ color: "#4dffb4" }}>
+                  Assinar
+                </Link>
+              </Flex>
+            )}
           </Flex>
         </Flex>
       </Sidebar>
     </>
   );
 }
+
+export const getServerSideProps = canSRRAuth(async (context) => {
+  const { id } = context.params;
+  try {
+    const apiClient = setupApiClient(context);
+
+    const check = await apiClient.get("/haircut/check");
+
+    const response = await apiClient.get("/haircut/detail", {
+      params: {
+        haircut_id: id,
+      },
+    });
+
+    if (response.data === null) {
+      return {
+        redirect: {
+          destination: "/haircuts",
+          permanent: false,
+        },
+      };
+    }
+
+    return {
+      props: {
+        haircut: response.data,
+        subscription: check.data?.subscriptions,
+      },
+    };
+  } catch (error) {
+    console.log(error);
+
+    return {
+      redirect: {
+        destination: "/haircuts",
+        permanent: false,
+      },
+    };
+  }
+});
