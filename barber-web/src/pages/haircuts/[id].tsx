@@ -15,6 +15,8 @@ import {
 import Head from "next/head";
 import { FiChevronLeft } from "react-icons/fi";
 import { HaircutsItem } from ".";
+import { ChangeEvent, useState } from "react";
+import Router from "next/router";
 
 interface SubscriptionProps {
   id: string;
@@ -32,7 +34,47 @@ export default function EditHaircut({
 }: EditHaircutProps) {
   const [isMobile] = useMediaQuery("(max-width: 500px)");
 
-  console.log(subscription);
+  const [name, setName] = useState(haircut?.name);
+  const [price, setPrice] = useState(haircut?.price);
+  const [status, setStatus] = useState(haircut?.status);
+  const [disableHaircut, setDisableHaircut] = useState(
+    haircut?.status ? "disabled" : "enabled"
+  );
+
+  function handleChangeStatus(event: ChangeEvent<HTMLInputElement>) {
+    if (event.target.value === "disabled") {
+      setDisableHaircut("enabled");
+      setStatus(false);
+    } else {
+      setDisableHaircut("disabled");
+      setStatus(true);
+    }
+  }
+
+  async function handleUpdate() {
+    if (name === "" || price === "") {
+      return;
+    }
+
+    try {
+      const apiClient = setupApiClient();
+
+      await apiClient.put("/haircut", {
+        name: name,
+        price: Number(price),
+        status: status,
+        haircut_id: haircut?.id,
+      });
+
+      alert("Corte atualizado com sucesso!");
+
+      Router.push("/haircuts");
+      
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <>
       <Head>
@@ -86,7 +128,7 @@ export default function EditHaircut({
             pb={8}
           >
             <Heading fontSize={isMobile ? "24px" : "2xl"} color="white" mb={4}>
-              Alterar modelo
+              Editar corte
             </Heading>
 
             <Input
@@ -98,6 +140,8 @@ export default function EditHaircut({
               borderColor="barber.100"
               size="lg"
               mb={3}
+              value={name}
+              onChange={(event) => setName(event.target.value)}
             />
 
             <Input
@@ -109,6 +153,8 @@ export default function EditHaircut({
               borderColor="barber.100"
               size="lg"
               mb={3}
+              value={price}
+              onChange={(event) => setPrice(event.target.value)}
             />
 
             <Stack
@@ -120,7 +166,13 @@ export default function EditHaircut({
               <Text fontWeight="bold" color="barber.100">
                 Desativar corte
               </Text>
-              <Switch colorScheme="red" size="lg" />
+              <Switch
+                colorScheme="red"
+                size="lg"
+                value={disableHaircut}
+                isChecked={disableHaircut === "disabled" ? false : true}
+                onChange={(event) => handleChangeStatus(event)}
+              />
             </Stack>
 
             <Button
@@ -133,6 +185,7 @@ export default function EditHaircut({
               cursor={
                 subscription?.status === "active" ? "pointer" : "not-allowed"
               }
+              onClick={handleUpdate}
             >
               Salvar
             </Button>
