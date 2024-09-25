@@ -1,3 +1,4 @@
+import { ModalInfo } from "@/components/modal";
 import { Sidebar } from "@/components/sidebar";
 import { setupApiClient } from "@/services/api";
 import { canSRRAuth } from "@/utils/canSSRAuth";
@@ -8,13 +9,14 @@ import {
   Link as ChakraLink,
   Text,
   useMediaQuery,
+  useDisclosure,
 } from "@chakra-ui/react";
 import Head from "next/head";
 import Link from "next/link";
 import { useState } from "react";
 import { IoMdPerson } from "react-icons/io";
 
-interface ScheduleItem {
+export interface ScheduleItem {
   id: string;
   customer: string;
   haircut: {
@@ -31,7 +33,14 @@ interface DashboardProps {
 
 export default function Dashboard({ schedule }: DashboardProps) {
   const [isMobile] = useMediaQuery("(max-width: 500px)");
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [list, setList] = useState(schedule);
+  const [service, setService] = useState<ScheduleItem>();
+
+  function handleOpenModal(item: ScheduleItem) {
+    setService(item);
+    onOpen();
+  }
 
   return (
     <>
@@ -76,6 +85,7 @@ export default function Dashboard({ schedule }: DashboardProps) {
               bg="transparent"
               style={{ textDecoration: "none" }}
               key={scheduleItem.id}
+              onClick={() => handleOpenModal(scheduleItem)}
             >
               <Flex
                 w="100%"
@@ -110,6 +120,14 @@ export default function Dashboard({ schedule }: DashboardProps) {
           ))}
         </Flex>
       </Sidebar>
+
+      <ModalInfo
+        isOpen={isOpen}
+        onOpen={onOpen}
+        onClose={onClose}
+        data={service}
+        finishService={async () => {}}
+      />
     </>
   );
 }
