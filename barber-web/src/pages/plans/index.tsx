@@ -1,9 +1,16 @@
 import { Sidebar } from "@/components/sidebar";
+import { setupApiClient } from "@/services/api";
+import { canSRRAuth } from "@/utils/canSSRAuth";
 import { Flex, useMediaQuery, Heading, Text, Button } from "@chakra-ui/react";
 import Head from "next/head";
 
-export default function Plans() {
+interface PlanProps {
+  premium: boolean;
+}
+
+export default function Plans({ premium }: PlanProps) {
   const [isMobile] = useMediaQuery("(max-width: 500px)");
+
   return (
     <>
       <Head>
@@ -108,14 +115,29 @@ export default function Plans() {
               </Text>
 
               <Button
-                background="button.cta"
-                mb={6}
-                color="grey.900"
+                background={premium ? "transparent" : "button.cta"}
+                mb={2}
+                color="gray.100"
                 size="lg"
-                _hover={{ bg: "#ffb13e" }}
+                _hover={{ bg: "transparent" }}
+                disabled={premium}
+                cursor={premium ? "not-allowed" : "pointer"}
               >
-                Virar Premium
+                {premium ? "Você já é premium" : "Virar premium"}
               </Button>
+
+              {premium && (
+                <Button
+                  background="white"
+                  mb={2}
+                  color="barber.900"
+                  size="lg"
+                  fontWeight="bold"
+                  _hover={{ bg: "#f1f1f1" }}
+                >
+                  Alterar assinatura
+                </Button>
+              )}
             </Flex>
           </Flex>
         </Flex>
@@ -123,3 +145,26 @@ export default function Plans() {
     </>
   );
 }
+
+export const getServerSideProps = canSRRAuth(async (context) => {
+  try {
+    const apiClient = setupApiClient(context);
+    const response = await apiClient.get("/me");
+
+    return {
+      props: {
+        premium:
+          response.data?.subscriptions?.status === "active" ? true : false,
+      },
+    };
+  } catch (error) {
+    console.log(error);
+
+    return {
+      redirect: {
+        destination: "/dashboard",
+        permanent: false,
+      },
+    };
+  }
+});
