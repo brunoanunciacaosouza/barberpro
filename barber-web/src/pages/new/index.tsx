@@ -135,7 +135,7 @@ export default function New({ haircuts }: NewProps) {
               onChange={(event) => handleChangeSelect(event.target.value)}
             >
               {haircuts?.map((item) => (
-                <option key={item.id} value={item.id}>
+                <option style={{background: '#fff', color: '#000'}} key={item.id} value={item.id}>
                   {item.name}
                 </option>
               ))}

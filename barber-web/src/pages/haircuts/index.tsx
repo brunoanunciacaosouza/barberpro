@@ -92,9 +92,9 @@ export default function Haircuts({ haircuts }: HaircutsProps) {
             </Heading>
 
             <Flex
-              width="60%"
+              width="80%"
               alignItems="center"
-              justifyContent={isMobile ? "center" : "flex-start"}
+              justifyContent={isMobile ? "center" : "flex-end"}
               gap={10}
             >
               <Link href="/haircuts/new">
